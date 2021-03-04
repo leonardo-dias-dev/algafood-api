@@ -1,0 +1,7 @@
+{
+    "nome": "Google Lanches",
+    "taxaFrete": 15.50,
+    "cozinha": {
+        "id": 1
+    }
+}
