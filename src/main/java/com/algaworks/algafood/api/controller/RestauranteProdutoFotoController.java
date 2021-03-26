@@ -22,8 +22,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.algaworks.algafood.api.dto.converter.FotoProdutoConverter;
-import com.algaworks.algafood.api.dto.request.FotoProdutoRequestDto;
-import com.algaworks.algafood.api.dto.response.FotoProdutoResponseDto;
+import com.algaworks.algafood.api.dto.request.FotoProdutoRequest;
+import com.algaworks.algafood.api.dto.response.FotoProdutoResponse;
 import com.algaworks.algafood.domain.exception.EntidadeNaoEncontradaException;
 import com.algaworks.algafood.domain.model.FotoProduto;
 import com.algaworks.algafood.domain.model.Produto;
@@ -49,7 +49,7 @@ public class RestauranteProdutoFotoController {
 	private FotoStorageService fotoStorageService;
 	
 	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-	public FotoProdutoResponseDto buscar(@PathVariable Long restauranteId, @PathVariable Long produtoId) {
+	public FotoProdutoResponse buscar(@PathVariable Long restauranteId, @PathVariable Long produtoId) {
 		FotoProduto fotoProduto = fotoProdutoService.buscar(produtoId, restauranteId);
 		
 		return fotoProdutoConverter.toResponseDto(fotoProduto);
@@ -79,7 +79,7 @@ public class RestauranteProdutoFotoController {
 	}
 	
 	@PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public FotoProdutoResponseDto atualizarFoto(@PathVariable Long restauranteId, @PathVariable Long produtoId, @Valid FotoProdutoRequestDto fotoProdutoResquestDto) throws IOException {
+	public FotoProdutoResponse atualizarFoto(@PathVariable Long restauranteId, @PathVariable Long produtoId, @Valid FotoProdutoRequest fotoProdutoResquestDto) throws IOException {
 		Produto produto = produtoService.buscar(produtoId, restauranteId);
 		
 		FotoProduto fotoProduto = new FotoProduto();

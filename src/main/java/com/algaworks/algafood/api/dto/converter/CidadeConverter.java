@@ -1,17 +1,17 @@
 package com.algaworks.algafood.api.dto.converter;
 
+import com.algaworks.algafood.api.dto.request.CidadeRequest;
 import org.springframework.stereotype.Component;
 
-import com.algaworks.algafood.api.dto.request.CidadeRequestDto;
-import com.algaworks.algafood.api.dto.response.CidadeResponseDto;
+import com.algaworks.algafood.api.dto.response.CidadeResponse;
 import com.algaworks.algafood.domain.model.Cidade;
 import com.algaworks.algafood.domain.model.Estado;
 
 @Component
-public class CidadeConverter extends AbstractConverter<Cidade, CidadeResponseDto, CidadeRequestDto> {
+public class CidadeConverter extends AbstractConverter<Cidade, CidadeResponse, CidadeRequest> {
 	
 	@Override
-	public void copyToEntity(CidadeRequestDto requestDto, Cidade entity) {
+	public void copyToEntity(CidadeRequest requestDto, Cidade entity) {
 		/*
 		 * Para evitar exception:
 		 * 

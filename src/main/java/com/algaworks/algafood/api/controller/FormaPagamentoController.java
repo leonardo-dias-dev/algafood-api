@@ -1,26 +1,16 @@
 package com.algaworks.algafood.api.controller;
 
-import java.util.List;
-
-import javax.validation.Valid;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.algaworks.algafood.api.dto.converter.FormaPagamentoConverter;
-import com.algaworks.algafood.api.dto.request.FormaPagamentoRequestDto;
-import com.algaworks.algafood.api.dto.response.FormaPagamentoResponseDto;
+import com.algaworks.algafood.api.dto.request.FormaPagamentoRequest;
+import com.algaworks.algafood.api.dto.response.FormaPagamentoResponse;
 import com.algaworks.algafood.domain.model.FormaPagamento;
 import com.algaworks.algafood.domain.service.FormaPagamentoService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/formas-pagamento")
@@ -33,23 +23,23 @@ public class FormaPagamentoController {
 	private FormaPagamentoConverter formaPagamentoConverter;
 	
 	@GetMapping
-	public List<FormaPagamentoResponseDto> listar() {
+	public List<FormaPagamentoResponse> listar() {
 		List<FormaPagamento> formaPagamentos = formaPagamentoService.listar();
-		
+
 		return formaPagamentoConverter.toCollectionResponseDto(formaPagamentos);
 	}
 	
 	@GetMapping("/{id}")
-	public FormaPagamentoResponseDto buscar(@PathVariable Long id) {
+	public FormaPagamentoResponse buscar(@PathVariable Long id) {
 		FormaPagamento formaPagamento = formaPagamentoService.buscar(id);
-		
+
 		return formaPagamentoConverter.toResponseDto(formaPagamento);
 	}
 	
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public FormaPagamentoResponseDto adicionar(@Valid @RequestBody FormaPagamentoRequestDto formaPagamentoRequestDto) {
-		FormaPagamento formaPagamento = formaPagamentoConverter.toEntity(formaPagamentoRequestDto);
+	public FormaPagamentoResponse adicionar(@Valid @RequestBody FormaPagamentoRequest formaPagamentoRequest) {
+		FormaPagamento formaPagamento = formaPagamentoConverter.toEntity(formaPagamentoRequest);
 		
 		formaPagamento = formaPagamentoService.salvar(formaPagamento);
 		
@@ -57,10 +47,10 @@ public class FormaPagamentoController {
 	}
 	
 	@PutMapping("/{id}")
-	public FormaPagamentoResponseDto atualizar(@PathVariable Long id, @Valid @RequestBody FormaPagamentoRequestDto formaPagamentoRequestDto) {
+	public FormaPagamentoResponse atualizar(@PathVariable Long id, @Valid @RequestBody FormaPagamentoRequest formaPagamentoRequest) {
 		FormaPagamento formaPagamento = formaPagamentoService.buscar(id);
 		
-		formaPagamentoConverter.copyToEntity(formaPagamentoRequestDto, formaPagamento);
+		formaPagamentoConverter.copyToEntity(formaPagamentoRequest, formaPagamento);
 		
 		formaPagamento = formaPagamentoService.salvar(formaPagamento);
 		

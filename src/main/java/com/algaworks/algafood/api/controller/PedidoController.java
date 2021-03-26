@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import com.algaworks.algafood.api.dto.request.PedidoRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -17,9 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.algaworks.algafood.api.dto.converter.PedidoConverter;
 import com.algaworks.algafood.api.dto.converter.PedidoResumoConverter;
-import com.algaworks.algafood.api.dto.request.PedidoRequestDto;
-import com.algaworks.algafood.api.dto.response.PedidoResponseDto;
-import com.algaworks.algafood.api.dto.response.PedidoResumoResponseDto;
+import com.algaworks.algafood.api.dto.response.PedidoResponse;
+import com.algaworks.algafood.api.dto.response.PedidoResumoResponse;
 import com.algaworks.algafood.core.jpa.PageableTranslator;
 import com.algaworks.algafood.domain.exception.EntidadeNaoEncontradaException;
 import com.algaworks.algafood.domain.exception.NegocioException;
@@ -47,29 +47,29 @@ public class PedidoController {
 	private PedidoResumoConverter pedidoResumoConverter;
 	
 	@GetMapping
-	public Page<PedidoResumoResponseDto> pesquisar(PedidoFilter pedidoFilter, Pageable pageable) {
+	public Page<PedidoResumoResponse> pesquisar(PedidoFilter pedidoFilter, Pageable pageable) {
 		pageable = traduzirPageable(pageable);
 		
 		Page<Pedido> pedidoPage = pedidoService.pesquisar(pedidoFilter, pageable);
 		
-		List<PedidoResumoResponseDto> pedidoResponsePage = pedidoResumoConverter.toCollectionResponseDto(pedidoPage.getContent());
+		List<PedidoResumoResponse> pedidoResponsePage = pedidoResumoConverter.toCollectionResponseDto(pedidoPage.getContent());
 		
-		Page<PedidoResumoResponseDto> pedidoResumoPage = new PageImpl<>(pedidoResponsePage, pageable, pedidoPage.getTotalElements());
+		Page<PedidoResumoResponse> pedidoResumoPage = new PageImpl<>(pedidoResponsePage, pageable, pedidoPage.getTotalElements());
 		
 		return pedidoResumoPage;
 	}
 	
 	@GetMapping("/{codigo}")
-	public PedidoResponseDto buscar(@PathVariable String codigo) {
+	public PedidoResponse buscar(@PathVariable String codigo) {
 		Pedido pedido = pedidoService.buscar(codigo);
 		
 		return pedidoConverter.toResponseDto(pedido);
 	}
 	
 	@PostMapping
-	public PedidoResponseDto adicionar(@Valid @RequestBody PedidoRequestDto pedidoRequestDto) {
+	public PedidoResponse adicionar(@Valid @RequestBody PedidoRequest pedidoRequest) {
 		try {
-			Pedido pedido = pedidoConverter.toEntity(pedidoRequestDto);
+			Pedido pedido = pedidoConverter.toEntity(pedidoRequest);
 			
 			// TODO - Pegar usuário autenticado
 			pedido.setCliente(new Usuario());

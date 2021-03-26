@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.algaworks.algafood.api.dto.converter.GrupoConverter;
-import com.algaworks.algafood.api.dto.response.GrupoResponseDto;
+import com.algaworks.algafood.api.dto.response.GrupoResponse;
 import com.algaworks.algafood.domain.model.Usuario;
 import com.algaworks.algafood.domain.service.UsuarioService;
 
@@ -28,7 +28,7 @@ public class UsuarioGrupoController {
 	private GrupoConverter grupoConverter;
 	
 	@GetMapping
-	public List<GrupoResponseDto> listar(@PathVariable Long usuarioId) {
+	public List<GrupoResponse> listar(@PathVariable Long usuarioId) {
 		Usuario usuario = usuarioService.buscar(usuarioId);
 		
 		return grupoConverter.toCollectionResponseDto(usuario.getGrupos());

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.algaworks.algafood.api.dto.converter.UsuarioConverter;
-import com.algaworks.algafood.api.dto.response.UsuarioResponseDto;
+import com.algaworks.algafood.api.dto.response.UsuarioResponse;
 import com.algaworks.algafood.domain.model.Restaurante;
 import com.algaworks.algafood.domain.service.RestauranteService;
 
@@ -28,7 +28,7 @@ public class RestauranteUsuarioResponsavelController {
 	private UsuarioConverter usuarioConverter;
 	
     @GetMapping
-    public List<UsuarioResponseDto> listar(@PathVariable Long restauranteId) {
+    public List<UsuarioResponse> listar(@PathVariable Long restauranteId) {
         Restaurante restaurante = restauranteService.buscar(restauranteId);
         
         return usuarioConverter.toCollectionResponseDto(restaurante.getResponsaveis());

@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import com.algaworks.algafood.api.dto.request.EstadoRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,8 +18,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.algaworks.algafood.api.dto.converter.EstadoConverter;
-import com.algaworks.algafood.api.dto.request.EstadoRequestDto;
-import com.algaworks.algafood.api.dto.response.EstadoResponseDto;
+import com.algaworks.algafood.api.dto.response.EstadoResponse;
 import com.algaworks.algafood.domain.model.Estado;
 import com.algaworks.algafood.domain.service.EstadoService;
 
@@ -33,14 +33,14 @@ public class EstadoController {
 	private EstadoConverter estadoConverter;
 
 	@GetMapping
-	public List<EstadoResponseDto> listar() {
+	public List<EstadoResponse> listar() {
 		List<Estado> estados = estadoService.listar();
 		
 		return estadoConverter.toCollectionResponseDto(estados);
 	}
 
 	@GetMapping("/{id}")
-	public EstadoResponseDto buscar(@PathVariable Long id) {
+	public EstadoResponse buscar(@PathVariable Long id) {
 		Estado estado = estadoService.buscar(id);
 		
 		return estadoConverter.toResponseDto(estado);
@@ -48,8 +48,8 @@ public class EstadoController {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public EstadoResponseDto adicionar(@Valid @RequestBody EstadoRequestDto estadoRequestDto) {
-		Estado estado = estadoConverter.toEntity(estadoRequestDto);
+	public EstadoResponse adicionar(@Valid @RequestBody EstadoRequest estadoRequest) {
+		Estado estado = estadoConverter.toEntity(estadoRequest);
 		
 		estado = estadoService.salvar(estado);
 		
@@ -57,10 +57,10 @@ public class EstadoController {
 	}
 
 	@PutMapping("/{id}")
-	public EstadoResponseDto atualizar(@PathVariable Long id, @Valid @RequestBody EstadoRequestDto estadoRequestDto) {
+	public EstadoResponse atualizar(@PathVariable Long id, @Valid @RequestBody EstadoRequest estadoRequest) {
 		Estado estadoBanco = estadoService.buscar(id);
 		
-		estadoConverter.copyToEntity(estadoRequestDto, estadoBanco);
+		estadoConverter.copyToEntity(estadoRequest, estadoBanco);
 		
 		estadoBanco = estadoService.salvar(estadoBanco);
 		

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.algaworks.algafood.api.dto.converter.FormaPagamentoConverter;
-import com.algaworks.algafood.api.dto.response.FormaPagamentoResponseDto;
+import com.algaworks.algafood.api.dto.response.FormaPagamentoResponse;
 import com.algaworks.algafood.domain.model.Restaurante;
 import com.algaworks.algafood.domain.service.RestauranteService;
 
@@ -28,7 +28,7 @@ public class RestauranteFormaPagamentoController {
 	private FormaPagamentoConverter formaPagamentoConverter;
 	
 	@GetMapping
-	public List<FormaPagamentoResponseDto> listar(@PathVariable Long restauranteId) {
+	public List<FormaPagamentoResponse> listar(@PathVariable Long restauranteId) {
 		Restaurante restaurante = restauranteService.buscar(restauranteId);
 		
 		return formaPagamentoConverter.toCollectionResponseDto(restaurante.getFormaPagamentos());

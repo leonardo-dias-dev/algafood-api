@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.algaworks.algafood.api.dto.converter.CozinhaConverter;
-import com.algaworks.algafood.api.dto.request.CozinhaRequestDto;
-import com.algaworks.algafood.api.dto.response.CozinhaResponseDto;
+import com.algaworks.algafood.api.dto.request.CozinhaRequest;
+import com.algaworks.algafood.api.dto.response.CozinhaResponse;
 import com.algaworks.algafood.domain.model.Cozinha;
 import com.algaworks.algafood.domain.service.CozinhaService;
 
@@ -37,18 +37,18 @@ public class CozinhaController {
 	private CozinhaConverter cozinhaConverter;
 
 	@GetMapping
-	public Page<CozinhaResponseDto> listar(@PageableDefault(page = 10) Pageable pageable) {
+	public Page<CozinhaResponse> listar(@PageableDefault(page = 10) Pageable pageable) {
 		Page<Cozinha> cozinhaPage = cozinhaService.listarPaginado(pageable);
 		
-		List<CozinhaResponseDto> cozinhas = cozinhaConverter.toCollectionResponseDto(cozinhaPage.getContent());
+		List<CozinhaResponse> cozinhas = cozinhaConverter.toCollectionResponseDto(cozinhaPage.getContent());
 		
-		Page<CozinhaResponseDto> cozinhaResponsePage = new PageImpl<>(cozinhas, pageable, cozinhaPage.getTotalElements());
+		Page<CozinhaResponse> cozinhaResponsePage = new PageImpl<>(cozinhas, pageable, cozinhaPage.getTotalElements());
 		
 		return cozinhaResponsePage;
 	}
 
 	@GetMapping("/{id}")
-	public CozinhaResponseDto buscar(@PathVariable Long id) {
+	public CozinhaResponse buscar(@PathVariable Long id) {
 		Cozinha cozinha = cozinhaService.buscar(id);
 		
 		return cozinhaConverter.toResponseDto(cozinha);
@@ -56,8 +56,8 @@ public class CozinhaController {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public CozinhaResponseDto adicionar(@Valid @RequestBody CozinhaRequestDto cozinhaRequestDto) {
-		Cozinha cozinha = cozinhaConverter.toEntity(cozinhaRequestDto);
+	public CozinhaResponse adicionar(@Valid @RequestBody CozinhaRequest cozinhaRequest) {
+		Cozinha cozinha = cozinhaConverter.toEntity(cozinhaRequest);
 		
 		cozinha = cozinhaService.salvar(cozinha);
 		
@@ -65,10 +65,10 @@ public class CozinhaController {
 	}
 
 	@PutMapping("/{id}")
-	public CozinhaResponseDto atualizar(@PathVariable Long id, @Valid @RequestBody CozinhaRequestDto cozinhaRequestDto) {
+	public CozinhaResponse atualizar(@PathVariable Long id, @Valid @RequestBody CozinhaRequest cozinhaRequest) {
 		Cozinha cozinhaBanco = cozinhaService.buscar(id);
 		
-		cozinhaConverter.copyToEntity(cozinhaRequestDto, cozinhaBanco);
+		cozinhaConverter.copyToEntity(cozinhaRequest, cozinhaBanco);
 		
 		cozinhaBanco = cozinhaService.salvar(cozinhaBanco);
 		

@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import com.algaworks.algafood.api.dto.request.RestauranteRequest;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,8 +28,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.algaworks.algafood.api.dto.converter.RestauranteConverter;
-import com.algaworks.algafood.api.dto.request.RestauranteRequestDto;
-import com.algaworks.algafood.api.dto.response.RestauranteResponseDto;
+import com.algaworks.algafood.api.dto.response.RestauranteResponse;
 import com.algaworks.algafood.api.dto.view.RestauranteView;
 import com.algaworks.algafood.domain.exception.CidadeNaoEncontradaException;
 import com.algaworks.algafood.domain.exception.CozinhaNaoEncontradaException;
@@ -56,7 +56,7 @@ public class RestauranteController {
 	
 	@GetMapping
 	@JsonView(RestauranteView.Resumo.class)
-	public List<RestauranteResponseDto> listar() {
+	public List<RestauranteResponse> listar() {
 		List<Restaurante> restaurantes = restauranteService.listar();
 		
 		return restauranteConverter.toCollectionResponseDto(restaurantes);
@@ -64,12 +64,12 @@ public class RestauranteController {
 	
 	@GetMapping(params = "projecao=apenas-nome")
 	@JsonView(RestauranteView.ApenasNome.class)
-	public List<RestauranteResponseDto> listarApenasNome() {
+	public List<RestauranteResponse> listarApenasNome() {
 		return listar();
 	}
 
 	@GetMapping("/{id}")
-	public RestauranteResponseDto buscar(@PathVariable Long id) {
+	public RestauranteResponse buscar(@PathVariable Long id) {
 		Restaurante restaurante = restauranteService.buscar(id);
 		
 		return restauranteConverter.toResponseDto(restaurante);
@@ -77,9 +77,9 @@ public class RestauranteController {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public RestauranteResponseDto adicionar(@Valid @RequestBody RestauranteRequestDto restauranteRequestDto) {
+	public RestauranteResponse adicionar(@Valid @RequestBody RestauranteRequest restauranteRequest) {
 		try {
-			Restaurante restaurante = restauranteConverter.toEntity(restauranteRequestDto);
+			Restaurante restaurante = restauranteConverter.toEntity(restauranteRequest);
 			
 			restaurante = restauranteService.salvar(restaurante);
 			
@@ -90,11 +90,11 @@ public class RestauranteController {
 	}
 	
 	@PutMapping("/{id}")
-	public RestauranteResponseDto atualizar(@PathVariable Long id, @Valid @RequestBody RestauranteRequestDto restauranteRequestDto) {
+	public RestauranteResponse atualizar(@PathVariable Long id, @Valid @RequestBody RestauranteRequest restauranteRequest) {
 		try {
 			Restaurante restauranteBanco = restauranteService.buscar(id);
 			
-			restauranteConverter.copyToEntity(restauranteRequestDto, restauranteBanco);
+			restauranteConverter.copyToEntity(restauranteRequest, restauranteBanco);
 			
 			restauranteBanco = restauranteService.salvar(restauranteBanco);
 			

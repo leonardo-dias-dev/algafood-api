@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import com.algaworks.algafood.api.dto.request.CidadeRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,8 +18,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.algaworks.algafood.api.dto.converter.CidadeConverter;
-import com.algaworks.algafood.api.dto.request.CidadeRequestDto;
-import com.algaworks.algafood.api.dto.response.CidadeResponseDto;
+import com.algaworks.algafood.api.dto.response.CidadeResponse;
 import com.algaworks.algafood.domain.exception.EstadoNaoEncontradoException;
 import com.algaworks.algafood.domain.exception.NegocioException;
 import com.algaworks.algafood.domain.model.Cidade;
@@ -35,14 +35,14 @@ public class CidadeController {
 	private CidadeConverter cidadeConverter;
 
 	@GetMapping
-	public List<CidadeResponseDto> listar() {
+	public List<CidadeResponse> listar() {
 		List<Cidade> cidades = cidadeService.listar();
 		
 		return cidadeConverter.toCollectionResponseDto(cidades);
 	}
 
 	@GetMapping("/{id}")
-	public CidadeResponseDto buscar(@PathVariable Long id) {
+	public CidadeResponse buscar(@PathVariable Long id) {
 		Cidade cidade = cidadeService.buscar(id);
 		
 		return cidadeConverter.toResponseDto(cidade);
@@ -50,9 +50,9 @@ public class CidadeController {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public CidadeResponseDto adicionar(@Valid @RequestBody CidadeRequestDto cidadeRequestDto) {
+	public CidadeResponse adicionar(@Valid @RequestBody CidadeRequest cidadeRequest) {
 		try {
-			Cidade cidade = cidadeConverter.toEntity(cidadeRequestDto);
+			Cidade cidade = cidadeConverter.toEntity(cidadeRequest);
 			
 			cidade = cidadeService.salvar(cidade);
 			
@@ -63,11 +63,11 @@ public class CidadeController {
 	}
 
 	@PutMapping("/{id}")
-	public CidadeResponseDto atualizar(@PathVariable Long id, @Valid @RequestBody CidadeRequestDto cidadeRequestDto) {
+	public CidadeResponse atualizar(@PathVariable Long id, @Valid @RequestBody CidadeRequest cidadeRequest) {
 		try {
 			Cidade cidadeBanco = cidadeService.buscar(id);
 			
-			cidadeConverter.copyToEntity(cidadeRequestDto, cidadeBanco);
+			cidadeConverter.copyToEntity(cidadeRequest, cidadeBanco);
 			
 			cidadeBanco = cidadeService.salvar(cidadeBanco);
 			

@@ -2,17 +2,17 @@ package com.algaworks.algafood.api.dto.converter;
 
 import org.springframework.stereotype.Component;
 
-import com.algaworks.algafood.api.dto.request.RestauranteRequestDto;
-import com.algaworks.algafood.api.dto.response.RestauranteResponseDto;
+import com.algaworks.algafood.api.dto.request.RestauranteRequest;
+import com.algaworks.algafood.api.dto.response.RestauranteResponse;
 import com.algaworks.algafood.domain.model.Cidade;
 import com.algaworks.algafood.domain.model.Cozinha;
 import com.algaworks.algafood.domain.model.Restaurante;
 
 @Component
-public class RestauranteConverter extends AbstractConverter<Restaurante, RestauranteResponseDto, RestauranteRequestDto> {
+public class RestauranteConverter extends AbstractConverter<Restaurante, RestauranteResponse, RestauranteRequest> {
 	
 	@Override
-	public void copyToEntity(RestauranteRequestDto requestDto, Restaurante entity) {
+	public void copyToEntity(RestauranteRequest requestDto, Restaurante entity) {
 		/*
 		 * Para evitar exception:
 		 * 

@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import com.algaworks.algafood.api.dto.request.GrupoRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,8 +18,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.algaworks.algafood.api.dto.converter.GrupoConverter;
-import com.algaworks.algafood.api.dto.request.GrupoRequestDto;
-import com.algaworks.algafood.api.dto.response.GrupoResponseDto;
+import com.algaworks.algafood.api.dto.response.GrupoResponse;
 import com.algaworks.algafood.domain.model.Grupo;
 import com.algaworks.algafood.domain.service.GrupoService;
 
@@ -33,14 +33,14 @@ public class GrupoController {
 	private GrupoConverter grupoConverter;
 	
 	@GetMapping
-	public List<GrupoResponseDto> listar() {
+	public List<GrupoResponse> listar() {
 		List<Grupo> grupos = grupoService.listar();
 		
 		return grupoConverter.toCollectionResponseDto(grupos);
 	}
 	
 	@GetMapping("/{id}")
-	public GrupoResponseDto buscar(@PathVariable Long id) {
+	public GrupoResponse buscar(@PathVariable Long id) {
 		Grupo grupo = grupoService.buscar(id);
 		
 		return grupoConverter.toResponseDto(grupo);
@@ -48,8 +48,8 @@ public class GrupoController {
 	
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public GrupoResponseDto adicionar(@Valid @RequestBody GrupoRequestDto grupoRequestDto) {
-		Grupo grupo = grupoConverter.toEntity(grupoRequestDto);
+	public GrupoResponse adicionar(@Valid @RequestBody GrupoRequest grupoRequest) {
+		Grupo grupo = grupoConverter.toEntity(grupoRequest);
 		
 		grupo = grupoService.salvar(grupo);
 		
@@ -57,10 +57,10 @@ public class GrupoController {
 	}
 	
 	@PutMapping("/{id}")
-	public GrupoResponseDto atualizar(@PathVariable Long id, @Valid @RequestBody GrupoRequestDto grupoRequestDto) {
+	public GrupoResponse atualizar(@PathVariable Long id, @Valid @RequestBody GrupoRequest grupoRequest) {
 		Grupo grupo = grupoService.buscar(id);
 		
-		grupoConverter.copyToEntity(grupoRequestDto, grupo);
+		grupoConverter.copyToEntity(grupoRequest, grupo);
 		
 		grupo = grupoService.salvar(grupo);
 		

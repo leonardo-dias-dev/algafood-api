@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.algaworks.algafood.api.dto.converter.PermissaoConverter;
-import com.algaworks.algafood.api.dto.response.PermissaoResponseDto;
+import com.algaworks.algafood.api.dto.response.PermissaoResponse;
 import com.algaworks.algafood.domain.model.Grupo;
 import com.algaworks.algafood.domain.service.GrupoService;
 
@@ -28,7 +28,7 @@ public class GrupoPermissaoController {
 	private PermissaoConverter permissaoConverter;
 	
 	@GetMapping
-	public List<PermissaoResponseDto> listar(@PathVariable Long grupoId) {
+	public List<PermissaoResponse> listar(@PathVariable Long grupoId) {
 		Grupo grupo = grupoService.buscar(grupoId);
 		
 		return permissaoConverter.toCollectionResponseDto(grupo.getPermissoes());
