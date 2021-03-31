@@ -1,6 +1,8 @@
 package com.algaworks.algafood.domain.service;
 
+import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -47,6 +49,10 @@ public class FormaPagamentoService {
 		} catch (DataIntegrityViolationException e) {
 			throw new EntidadeEmUsoException(String.format(MSG_EM_USO, id));
 		}
+	}
+
+	public Optional<OffsetDateTime> getDataUltimaAtualizacao() {
+		return formaPagamentoRepository.getDataUltimaAtualizacao();
 	}
 	
 }
