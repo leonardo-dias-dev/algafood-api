@@ -1,5 +1,6 @@
 package com.algaworks.algafood.api.dto.request;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Setter;
 
 import javax.validation.Valid;
@@ -13,6 +14,7 @@ import lombok.Getter;
 public class CidadeRequest {
 	
 	@NotBlank
+	@ApiModelProperty(example = "Uberlândia", required = true)
 	private String nome;
 	
 	@Valid
