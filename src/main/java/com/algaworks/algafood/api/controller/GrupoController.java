@@ -4,9 +4,11 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import com.algaworks.algafood.api.openapi.controller.GrupoControllerOpenApi;
 import com.algaworks.algafood.api.dto.request.GrupoRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,8 +25,8 @@ import com.algaworks.algafood.domain.model.Grupo;
 import com.algaworks.algafood.domain.service.GrupoService;
 
 @RestController
-@RequestMapping("/grupos")
-public class GrupoController {
+@RequestMapping(path = "/grupos", produces = MediaType.APPLICATION_JSON_VALUE)
+public class GrupoController implements GrupoControllerOpenApi {
 	
 	@Autowired
 	private GrupoService grupoService;
@@ -32,6 +34,7 @@ public class GrupoController {
 	@Autowired
 	private GrupoConverter grupoConverter;
 	
+	@Override
 	@GetMapping
 	public List<GrupoResponse> listar() {
 		List<Grupo> grupos = grupoService.listar();
@@ -39,6 +42,7 @@ public class GrupoController {
 		return grupoConverter.toCollectionResponseDto(grupos);
 	}
 	
+	@Override
 	@GetMapping("/{id}")
 	public GrupoResponse buscar(@PathVariable Long id) {
 		Grupo grupo = grupoService.buscar(id);
@@ -46,6 +50,7 @@ public class GrupoController {
 		return grupoConverter.toResponseDto(grupo);
 	}
 	
+	@Override
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public GrupoResponse adicionar(@Valid @RequestBody GrupoRequest grupoRequest) {
@@ -56,6 +61,7 @@ public class GrupoController {
 		return grupoConverter.toResponseDto(grupo);
 	}
 	
+	@Override
 	@PutMapping("/{id}")
 	public GrupoResponse atualizar(@PathVariable Long id, @Valid @RequestBody GrupoRequest grupoRequest) {
 		Grupo grupo = grupoService.buscar(id);
@@ -67,6 +73,7 @@ public class GrupoController {
 		return grupoConverter.toResponseDto(grupo);
 	}
 	
+	@Override
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void remover(@PathVariable Long id) {

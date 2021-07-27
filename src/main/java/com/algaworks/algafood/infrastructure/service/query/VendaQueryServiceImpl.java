@@ -17,7 +17,7 @@ import org.springframework.stereotype.Repository;
 import com.algaworks.algafood.domain.filter.VendaDiariaFilter;
 import com.algaworks.algafood.domain.model.Pedido;
 import com.algaworks.algafood.domain.model.StatusPedido;
-import com.algaworks.algafood.domain.model.dto.VendaDiariaDto;
+import com.algaworks.algafood.api.dto.response.VendaDiariaDto;
 import com.algaworks.algafood.domain.service.VendaQueryService;
 
 @Repository

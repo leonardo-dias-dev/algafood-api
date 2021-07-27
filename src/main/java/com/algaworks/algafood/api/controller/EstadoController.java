@@ -5,8 +5,10 @@ import java.util.List;
 import javax.validation.Valid;
 
 import com.algaworks.algafood.api.dto.request.EstadoRequest;
+import com.algaworks.algafood.api.openapi.controller.EstadoControllerOpenApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,8 +25,8 @@ import com.algaworks.algafood.domain.model.Estado;
 import com.algaworks.algafood.domain.service.EstadoService;
 
 @RestController
-@RequestMapping("/estados")
-public class EstadoController {
+@RequestMapping(path = "/estados", produces = MediaType.APPLICATION_JSON_VALUE)
+public class EstadoController implements EstadoControllerOpenApi {
 
 	@Autowired
 	private EstadoService estadoService;
@@ -32,21 +34,24 @@ public class EstadoController {
 	@Autowired
 	private EstadoConverter estadoConverter;
 
-	@GetMapping
+	@Override
+    @GetMapping
 	public List<EstadoResponse> listar() {
 		List<Estado> estados = estadoService.listar();
 		
 		return estadoConverter.toCollectionResponseDto(estados);
 	}
 
-	@GetMapping("/{id}")
+	@Override
+    @GetMapping("/{id}")
 	public EstadoResponse buscar(@PathVariable Long id) {
 		Estado estado = estadoService.buscar(id);
 		
 		return estadoConverter.toResponseDto(estado);
 	}
 
-	@PostMapping
+	@Override
+    @PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public EstadoResponse adicionar(@Valid @RequestBody EstadoRequest estadoRequest) {
 		Estado estado = estadoConverter.toEntity(estadoRequest);
@@ -56,7 +61,8 @@ public class EstadoController {
 		return estadoConverter.toResponseDto(estado);
 	}
 
-	@PutMapping("/{id}")
+	@Override
+    @PutMapping("/{id}")
 	public EstadoResponse atualizar(@PathVariable Long id, @Valid @RequestBody EstadoRequest estadoRequest) {
 		Estado estadoBanco = estadoService.buscar(id);
 		
@@ -67,7 +73,8 @@ public class EstadoController {
 		return estadoConverter.toResponseDto(estadoBanco);
 	}
 
-	@DeleteMapping("/{id}")
+	@Override
+    @DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void remover(@PathVariable Long id) {
 		estadoService.remover(id);

@@ -2,6 +2,7 @@ package com.algaworks.algafood.api.controller;
 
 import java.util.List;
 
+import com.algaworks.algafood.api.openapi.controller.EstatisticasControllerOpenApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -12,13 +13,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.algaworks.algafood.domain.filter.VendaDiariaFilter;
-import com.algaworks.algafood.domain.model.dto.VendaDiariaDto;
+import com.algaworks.algafood.api.dto.response.VendaDiariaDto;
 import com.algaworks.algafood.domain.service.VendaQueryService;
 import com.algaworks.algafood.domain.service.VendaReportService;
 
 @RestController
-@RequestMapping("/estatisticas")
-public class EstatisticasController {
+@RequestMapping(path = "/estatisticas")
+public class EstatisticasController implements EstatisticasControllerOpenApi {
 	
 	@Autowired
 	private VendaQueryService vendaQueryService;
@@ -26,11 +27,13 @@ public class EstatisticasController {
 	@Autowired
 	private VendaReportService vendaReportService;
 	
+	@Override
 	@GetMapping(path = "/vendas-diarias", produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<VendaDiariaDto> consultarVendasDiarias(VendaDiariaFilter vendaDiariaFilter, @RequestParam(required = false, defaultValue = "+00:00") String timeOffset) {
 		return vendaQueryService.consultarVendasDiarias(vendaDiariaFilter, timeOffset);
 	}
 	
+	@Override
 	@GetMapping(path = "/vendas-diarias", produces = MediaType.APPLICATION_PDF_VALUE)
 	public ResponseEntity<byte[]> consultarVendasDiariasPdf(VendaDiariaFilter vendaDiariaFilter, @RequestParam(required = false, defaultValue = "+00:00") String timeOffset) {
 		byte[] vendasDiarias = vendaReportService.emitirVendasDiarias(vendaDiariaFilter, timeOffset);

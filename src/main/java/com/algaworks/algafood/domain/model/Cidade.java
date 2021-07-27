@@ -8,8 +8,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.databind.jsonschema.JsonSerializableSchema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import springfox.documentation.annotations.ApiIgnore;
 
 @Data
 @Entity

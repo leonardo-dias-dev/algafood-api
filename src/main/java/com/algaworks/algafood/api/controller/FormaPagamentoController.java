@@ -3,11 +3,13 @@ package com.algaworks.algafood.api.controller;
 import com.algaworks.algafood.api.dto.converter.FormaPagamentoConverter;
 import com.algaworks.algafood.api.dto.request.FormaPagamentoRequest;
 import com.algaworks.algafood.api.dto.response.FormaPagamentoResponse;
+import com.algaworks.algafood.api.openapi.controller.FormaPagamentoControllerOpenApi;
 import com.algaworks.algafood.domain.model.FormaPagamento;
 import com.algaworks.algafood.domain.service.FormaPagamentoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.ServletWebRequest;
@@ -20,8 +22,8 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @RestController
-@RequestMapping("/formas-pagamento")
-public class FormaPagamentoController {
+@RequestMapping(path = "/formas-pagamento", produces = MediaType.APPLICATION_JSON_VALUE)
+public class FormaPagamentoController implements FormaPagamentoControllerOpenApi {
 	
 	@Autowired
 	private FormaPagamentoService formaPagamentoService;
@@ -29,7 +31,8 @@ public class FormaPagamentoController {
 	@Autowired
 	private FormaPagamentoConverter formaPagamentoConverter;
 	
-	@GetMapping
+	@Override
+    @GetMapping
 	public ResponseEntity<List<FormaPagamentoResponse>> listar(ServletWebRequest servletWebRequest) {
 		String eTag = eTag(servletWebRequest);
 
@@ -47,7 +50,7 @@ public class FormaPagamentoController {
 				.body(formasPagamentosResponse);
 	}
 
-	public String eTag(ServletWebRequest servletWebRequest) {
+	private String eTag(ServletWebRequest servletWebRequest) {
 		ShallowEtagHeaderFilter.disableContentCaching(servletWebRequest.getRequest());
 		String eTag = "0";
 		Optional<OffsetDateTime> dataUltimaAtualizacao = formaPagamentoService.getDataUltimaAtualizacao();
@@ -59,7 +62,8 @@ public class FormaPagamentoController {
 		return eTag;
 	}
 	
-	@GetMapping("/{id}")
+	@Override
+    @GetMapping("/{id}")
 	public ResponseEntity<FormaPagamentoResponse> buscar(@PathVariable Long id, ServletWebRequest servletWebRequest) {
 		String eTag = eTag(servletWebRequest);
 
@@ -76,7 +80,8 @@ public class FormaPagamentoController {
 				.body(formaPagamentoResponse);
 	}
 	
-	@PostMapping
+	@Override
+    @PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public FormaPagamentoResponse adicionar(@Valid @RequestBody FormaPagamentoRequest formaPagamentoRequest) {
 		FormaPagamento formaPagamento = formaPagamentoConverter.toEntity(formaPagamentoRequest);
@@ -86,7 +91,8 @@ public class FormaPagamentoController {
 		return formaPagamentoConverter.toResponseDto(formaPagamento);
 	}
 	
-	@PutMapping("/{id}")
+	@Override
+    @PutMapping("/{id}")
 	public FormaPagamentoResponse atualizar(@PathVariable Long id, @Valid @RequestBody FormaPagamentoRequest formaPagamentoRequest) {
 		FormaPagamento formaPagamento = formaPagamentoService.buscar(id);
 		
@@ -97,7 +103,8 @@ public class FormaPagamentoController {
 		return formaPagamentoConverter.toResponseDto(formaPagamento);
 	}
 	
-	@DeleteMapping("/{id}")
+	@Override
+    @DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void remover(@PathVariable Long id) {
 		formaPagamentoService.remover(id);

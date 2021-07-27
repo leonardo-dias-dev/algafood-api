@@ -4,12 +4,14 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import com.algaworks.algafood.api.openapi.controller.CozinhaControllerOpenApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,8 +29,8 @@ import com.algaworks.algafood.domain.model.Cozinha;
 import com.algaworks.algafood.domain.service.CozinhaService;
 
 @RestController
-@RequestMapping("/cozinhas")
-public class CozinhaController {
+@RequestMapping(path ="/cozinhas", produces = MediaType.APPLICATION_JSON_VALUE)
+public class CozinhaController implements CozinhaControllerOpenApi {
 
 	@Autowired
 	private CozinhaService cozinhaService;
@@ -36,6 +38,7 @@ public class CozinhaController {
 	@Autowired
 	private CozinhaConverter cozinhaConverter;
 
+	@Override
 	@GetMapping
 	public Page<CozinhaResponse> listar(@PageableDefault(page = 10) Pageable pageable) {
 		Page<Cozinha> cozinhaPage = cozinhaService.listarPaginado(pageable);
@@ -47,6 +50,7 @@ public class CozinhaController {
 		return cozinhaResponsePage;
 	}
 
+	@Override
 	@GetMapping("/{id}")
 	public CozinhaResponse buscar(@PathVariable Long id) {
 		Cozinha cozinha = cozinhaService.buscar(id);
@@ -54,6 +58,7 @@ public class CozinhaController {
 		return cozinhaConverter.toResponseDto(cozinha);
 	}
 
+	@Override
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public CozinhaResponse adicionar(@Valid @RequestBody CozinhaRequest cozinhaRequest) {
@@ -64,6 +69,7 @@ public class CozinhaController {
 		return cozinhaConverter.toResponseDto(cozinha);
 	}
 
+	@Override
 	@PutMapping("/{id}")
 	public CozinhaResponse atualizar(@PathVariable Long id, @Valid @RequestBody CozinhaRequest cozinhaRequest) {
 		Cozinha cozinhaBanco = cozinhaService.buscar(id);
@@ -75,6 +81,7 @@ public class CozinhaController {
 		return cozinhaConverter.toResponseDto(cozinhaBanco);
 	}
 
+	@Override
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void remover(@PathVariable Long id) {

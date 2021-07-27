@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import com.algaworks.algafood.api.openapi.controller.RestauranteProdutoFotoControllerOpenApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
@@ -12,14 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.algaworks.algafood.api.dto.converter.FotoProdutoConverter;
 import com.algaworks.algafood.api.dto.request.FotoProdutoRequest;
@@ -31,10 +25,11 @@ import com.algaworks.algafood.domain.service.FotoProdutoService;
 import com.algaworks.algafood.domain.service.FotoStorageService;
 import com.algaworks.algafood.domain.service.FotoStorageService.FotoRecuperada;
 import com.algaworks.algafood.domain.service.ProdutoService;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/restaurantes/{restauranteId}/produtos/{produtoId}/foto")
-public class RestauranteProdutoFotoController {
+@RequestMapping(path = "/restaurantes/{restauranteId}/produtos/{produtoId}/foto", produces = MediaType.APPLICATION_JSON_VALUE)
+public class RestauranteProdutoFotoController implements RestauranteProdutoFotoControllerOpenApi {
 	
 	@Autowired
 	private FotoProdutoService fotoProdutoService;
@@ -48,15 +43,18 @@ public class RestauranteProdutoFotoController {
 	@Autowired
 	private FotoStorageService fotoStorageService;
 	
-	@GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+	@Override
+	@GetMapping
 	public FotoProdutoResponse buscar(@PathVariable Long restauranteId, @PathVariable Long produtoId) {
 		FotoProduto fotoProduto = fotoProdutoService.buscar(produtoId, restauranteId);
 		
 		return fotoProdutoConverter.toResponseDto(fotoProduto);
 	}
 	
-	@GetMapping(produces = MediaType.IMAGE_JPEG_VALUE)
-	public ResponseEntity<?> buscarArquivo(@PathVariable Long restauranteId, @PathVariable Long produtoId, @RequestHeader(name = "accept") String acceptHeader) throws HttpMediaTypeNotAcceptableException {
+	@Override
+	@GetMapping(produces = MediaType.ALL_VALUE)
+	public ResponseEntity<?> buscarArquivo(@PathVariable Long restauranteId, @PathVariable Long produtoId,
+										   @RequestHeader(name = "accept") String acceptHeader) throws HttpMediaTypeNotAcceptableException {
 		try {
 			FotoProduto fotoProduto = fotoProdutoService.buscar(produtoId, restauranteId);
 			
@@ -78,8 +76,11 @@ public class RestauranteProdutoFotoController {
 		}
 	}
 	
+	@Override
 	@PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public FotoProdutoResponse atualizarFoto(@PathVariable Long restauranteId, @PathVariable Long produtoId, @Valid FotoProdutoRequest fotoProdutoResquestDto) throws IOException {
+	public FotoProdutoResponse atualizarFoto(@PathVariable Long restauranteId, @PathVariable Long produtoId,
+											 @Valid FotoProdutoRequest fotoProdutoResquestDto,
+											 @RequestPart MultipartFile multipartFile) throws IOException {
 		Produto produto = produtoService.buscar(produtoId, restauranteId);
 		
 		FotoProduto fotoProduto = new FotoProduto();
@@ -94,6 +95,7 @@ public class RestauranteProdutoFotoController {
 		return fotoProdutoConverter.toResponseDto(fotoProduto);
 	}
 	
+	@Override
 	@DeleteMapping
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void removerFoto(@PathVariable Long restauranteId, @PathVariable Long produtoId) {

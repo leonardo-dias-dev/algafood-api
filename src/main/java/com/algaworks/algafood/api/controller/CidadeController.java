@@ -1,32 +1,24 @@
 package com.algaworks.algafood.api.controller;
 
-import java.util.List;
-
-import javax.validation.Valid;
-
-import com.algaworks.algafood.api.dto.request.CidadeRequest;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-
+import com.algaworks.algafood.api.openapi.controller.CidadeControllerOpenApi;
 import com.algaworks.algafood.api.dto.converter.CidadeConverter;
+import com.algaworks.algafood.api.dto.request.CidadeRequest;
 import com.algaworks.algafood.api.dto.response.CidadeResponse;
 import com.algaworks.algafood.domain.exception.EstadoNaoEncontradoException;
 import com.algaworks.algafood.domain.exception.NegocioException;
 import com.algaworks.algafood.domain.model.Cidade;
 import com.algaworks.algafood.domain.service.CidadeService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.List;
 
 @RestController
-@RequestMapping("/cidades")
-public class CidadeController {
+@RequestMapping(path = "/cidades", produces = MediaType.APPLICATION_JSON_VALUE)
+public class CidadeController implements CidadeControllerOpenApi {
 
 	@Autowired
 	private CidadeService cidadeService;
@@ -34,6 +26,7 @@ public class CidadeController {
 	@Autowired
 	private CidadeConverter cidadeConverter;
 
+	@Override
 	@GetMapping
 	public List<CidadeResponse> listar() {
 		List<Cidade> cidades = cidadeService.listar();
@@ -41,6 +34,7 @@ public class CidadeController {
 		return cidadeConverter.toCollectionResponseDto(cidades);
 	}
 
+	@Override
 	@GetMapping("/{id}")
 	public CidadeResponse buscar(@PathVariable Long id) {
 		Cidade cidade = cidadeService.buscar(id);
@@ -48,6 +42,7 @@ public class CidadeController {
 		return cidadeConverter.toResponseDto(cidade);
 	}
 
+	@Override
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public CidadeResponse adicionar(@Valid @RequestBody CidadeRequest cidadeRequest) {
@@ -62,6 +57,7 @@ public class CidadeController {
 		}
 	}
 
+	@Override
 	@PutMapping("/{id}")
 	public CidadeResponse atualizar(@PathVariable Long id, @Valid @RequestBody CidadeRequest cidadeRequest) {
 		try {
@@ -77,6 +73,7 @@ public class CidadeController {
 		}
 	}
 
+	@Override
 	@DeleteMapping("/{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void remover(@PathVariable Long id) {

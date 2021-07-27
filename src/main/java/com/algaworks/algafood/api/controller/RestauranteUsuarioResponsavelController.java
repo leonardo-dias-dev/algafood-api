@@ -2,6 +2,7 @@ package com.algaworks.algafood.api.controller;
 
 import java.util.List;
 
+import com.algaworks.algafood.api.openapi.controller.RestauranteUsuarioResponsavelControllerOpenApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,7 +20,7 @@ import com.algaworks.algafood.domain.service.RestauranteService;
 
 @RestController
 @RequestMapping("/restaurantes/{restauranteId}/responsaveis")
-public class RestauranteUsuarioResponsavelController {
+public class RestauranteUsuarioResponsavelController implements RestauranteUsuarioResponsavelControllerOpenApi {
 	
 	@Autowired
 	private RestauranteService restauranteService;
@@ -27,6 +28,7 @@ public class RestauranteUsuarioResponsavelController {
 	@Autowired
 	private UsuarioConverter usuarioConverter;
 	
+    @Override
     @GetMapping
     public List<UsuarioResponse> listar(@PathVariable Long restauranteId) {
         Restaurante restaurante = restauranteService.buscar(restauranteId);
@@ -34,12 +36,14 @@ public class RestauranteUsuarioResponsavelController {
         return usuarioConverter.toCollectionResponseDto(restaurante.getResponsaveis());
     }
     
+    @Override
     @PutMapping("/{usuarioId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void associar(@PathVariable Long restauranteId, @PathVariable Long usuarioId) {
     	restauranteService.associarResponsavel(restauranteId, usuarioId);
     }
     
+    @Override
     @DeleteMapping("/{usuarioId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void desassociar(@PathVariable Long restauranteId, @PathVariable Long usuarioId) {

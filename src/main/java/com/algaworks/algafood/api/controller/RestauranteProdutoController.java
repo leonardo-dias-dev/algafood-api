@@ -5,8 +5,10 @@ import java.util.List;
 import javax.validation.Valid;
 
 import com.algaworks.algafood.api.dto.request.ProdutoRequest;
+import com.algaworks.algafood.api.openapi.controller.RestauranteProdutoControllerOpenApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,8 +26,8 @@ import com.algaworks.algafood.domain.service.ProdutoService;
 import com.algaworks.algafood.domain.service.RestauranteService;
 
 @RestController
-@RequestMapping("/restaurantes/{restauranteId}/produtos")
-public class RestauranteProdutoController {
+@RequestMapping(path = "/restaurantes/{restauranteId}/produtos", produces = MediaType.APPLICATION_JSON_VALUE)
+public class RestauranteProdutoController implements RestauranteProdutoControllerOpenApi {
 	
 	@Autowired
 	private ProdutoService produtoService;
@@ -36,7 +38,8 @@ public class RestauranteProdutoController {
 	@Autowired
 	private ProdutoConverter produtoConverter;
 	
-	@GetMapping
+	@Override
+    @GetMapping
 	public List<ProdutoResponse> listar(@PathVariable Long restauranteId) {
 		Restaurante restaurante = restauranteService.buscar(restauranteId);
 		
@@ -45,14 +48,16 @@ public class RestauranteProdutoController {
 		return produtoConverter.toCollectionResponseDto(produtos);
 	}
 	
-	@GetMapping("/{produtoId}")
+	@Override
+    @GetMapping("/{produtoId}")
 	public ProdutoResponse buscar(@PathVariable Long restauranteId, @PathVariable Long produtoId) {
 		Produto produto = produtoService.buscar(produtoId, restauranteId);
 		
 		return produtoConverter.toResponseDto(produto);
 	}
 	
-	@PostMapping
+	@Override
+    @PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public ProdutoResponse adicionar(@PathVariable Long restauranteId, @Valid @RequestBody ProdutoRequest produtoRequest) {
 		Restaurante restaurante = restauranteService.buscar(restauranteId);
@@ -66,7 +71,8 @@ public class RestauranteProdutoController {
 		return produtoConverter.toResponseDto(produto);
 	}
 	
-	@PutMapping("/{produtoId}")
+	@Override
+    @PutMapping("/{produtoId}")
 	public ProdutoResponse atualizar(@PathVariable Long restauranteId, @PathVariable Long produtoId, @Valid @RequestBody ProdutoRequest produtoRequest) {
 		Produto produto = produtoService.buscar(produtoId, restauranteId);
 		
