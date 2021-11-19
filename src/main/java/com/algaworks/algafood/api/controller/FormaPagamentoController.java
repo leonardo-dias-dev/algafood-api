@@ -1,12 +1,13 @@
 package com.algaworks.algafood.api.controller;
 
-import com.algaworks.algafood.api.dto.converter.FormaPagamentoConverter;
-import com.algaworks.algafood.api.dto.request.FormaPagamentoRequest;
-import com.algaworks.algafood.api.dto.response.FormaPagamentoResponse;
+import com.algaworks.algafood.api.converter.FormaPagamentoConverter;
+import com.algaworks.algafood.api.dto.input.FormaPagamentoInput;
+import com.algaworks.algafood.api.dto.model.FormaPagamentoModel;
 import com.algaworks.algafood.api.openapi.controller.FormaPagamentoControllerOpenApi;
 import com.algaworks.algafood.domain.model.FormaPagamento;
 import com.algaworks.algafood.domain.service.FormaPagamentoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,90 +25,90 @@ import java.util.concurrent.TimeUnit;
 @RestController
 @RequestMapping(path = "/formas-pagamento", produces = MediaType.APPLICATION_JSON_VALUE)
 public class FormaPagamentoController implements FormaPagamentoControllerOpenApi {
-	
-	@Autowired
-	private FormaPagamentoService formaPagamentoService;
-	
-	@Autowired
-	private FormaPagamentoConverter formaPagamentoConverter;
-	
-	@Override
+
+    @Autowired
+    private FormaPagamentoService formaPagamentoService;
+
+    @Autowired
+    private FormaPagamentoConverter formaPagamentoConverter;
+
+    @Override
     @GetMapping
-	public ResponseEntity<List<FormaPagamentoResponse>> listar(ServletWebRequest servletWebRequest) {
-		String eTag = eTag(servletWebRequest);
+    public ResponseEntity<CollectionModel<FormaPagamentoModel>> listar(ServletWebRequest servletWebRequest) {
+        String eTag = eTag(servletWebRequest);
 
-		if (servletWebRequest.checkNotModified(eTag)) {
-			return null;
-		}
+        if (servletWebRequest.checkNotModified(eTag)) {
+            return null;
+        }
 
-		List<FormaPagamento> formaPagamentos = formaPagamentoService.listar();
+        List<FormaPagamento> formaPagamentos = formaPagamentoService.listar();
 
-		List<FormaPagamentoResponse> formasPagamentosResponse = formaPagamentoConverter.toCollectionResponseDto(formaPagamentos);
+        CollectionModel<FormaPagamentoModel> formasPagamentosResponse = formaPagamentoConverter.toCollectionModel(formaPagamentos);
 
-		return ResponseEntity.ok()
-				.cacheControl(CacheControl.maxAge(10, TimeUnit.SECONDS).cachePublic())
-				.eTag(eTag)
-				.body(formasPagamentosResponse);
-	}
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.maxAge(10, TimeUnit.SECONDS).cachePublic())
+                .eTag(eTag)
+                .body(formasPagamentosResponse);
+    }
 
-	private String eTag(ServletWebRequest servletWebRequest) {
-		ShallowEtagHeaderFilter.disableContentCaching(servletWebRequest.getRequest());
-		String eTag = "0";
-		Optional<OffsetDateTime> dataUltimaAtualizacao = formaPagamentoService.getDataUltimaAtualizacao();
+    private String eTag(ServletWebRequest servletWebRequest) {
+        ShallowEtagHeaderFilter.disableContentCaching(servletWebRequest.getRequest());
+        String eTag = "0";
+        Optional<OffsetDateTime> dataUltimaAtualizacao = formaPagamentoService.getDataUltimaAtualizacao();
 
-		if (dataUltimaAtualizacao.isPresent()) {
-			eTag = String.valueOf(dataUltimaAtualizacao.get().toEpochSecond());
-		}
+        if (dataUltimaAtualizacao.isPresent()) {
+            eTag = String.valueOf(dataUltimaAtualizacao.get().toEpochSecond());
+        }
 
-		return eTag;
-	}
-	
-	@Override
+        return eTag;
+    }
+
+    @Override
     @GetMapping("/{id}")
-	public ResponseEntity<FormaPagamentoResponse> buscar(@PathVariable Long id, ServletWebRequest servletWebRequest) {
-		String eTag = eTag(servletWebRequest);
+    public ResponseEntity<FormaPagamentoModel> buscar(@PathVariable Long id, ServletWebRequest servletWebRequest) {
+        String eTag = eTag(servletWebRequest);
 
-		if (servletWebRequest.checkNotModified(eTag)) {
-			return null;
-		}
+        if (servletWebRequest.checkNotModified(eTag)) {
+            return null;
+        }
 
-		FormaPagamento formaPagamento = formaPagamentoService.buscar(id);
+        FormaPagamento formaPagamento = formaPagamentoService.buscar(id);
 
-		FormaPagamentoResponse formaPagamentoResponse = formaPagamentoConverter.toResponseDto(formaPagamento);
+        FormaPagamentoModel formaPagamentoModel = formaPagamentoConverter.toModel(formaPagamento);
 
-		return ResponseEntity.ok()
-				.cacheControl(CacheControl.maxAge(10, TimeUnit.SECONDS))
-				.body(formaPagamentoResponse);
-	}
-	
-	@Override
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.maxAge(10, TimeUnit.SECONDS))
+                .body(formaPagamentoModel);
+    }
+
+    @Override
     @PostMapping
-	@ResponseStatus(HttpStatus.CREATED)
-	public FormaPagamentoResponse adicionar(@Valid @RequestBody FormaPagamentoRequest formaPagamentoRequest) {
-		FormaPagamento formaPagamento = formaPagamentoConverter.toEntity(formaPagamentoRequest);
-		
-		formaPagamento = formaPagamentoService.salvar(formaPagamento);
-		
-		return formaPagamentoConverter.toResponseDto(formaPagamento);
-	}
-	
-	@Override
+    @ResponseStatus(HttpStatus.CREATED)
+    public FormaPagamentoModel adicionar(@Valid @RequestBody FormaPagamentoInput formaPagamentoInput) {
+        FormaPagamento formaPagamento = formaPagamentoConverter.toDomainObject(formaPagamentoInput);
+
+        formaPagamento = formaPagamentoService.salvar(formaPagamento);
+
+        return formaPagamentoConverter.toModel(formaPagamento);
+    }
+
+    @Override
     @PutMapping("/{id}")
-	public FormaPagamentoResponse atualizar(@PathVariable Long id, @Valid @RequestBody FormaPagamentoRequest formaPagamentoRequest) {
-		FormaPagamento formaPagamento = formaPagamentoService.buscar(id);
-		
-		formaPagamentoConverter.copyToEntity(formaPagamentoRequest, formaPagamento);
-		
-		formaPagamento = formaPagamentoService.salvar(formaPagamento);
-		
-		return formaPagamentoConverter.toResponseDto(formaPagamento);
-	}
-	
-	@Override
+    public FormaPagamentoModel atualizar(@PathVariable Long id, @Valid @RequestBody FormaPagamentoInput formaPagamentoInput) {
+        FormaPagamento formaPagamento = formaPagamentoService.buscar(id);
+
+        formaPagamentoConverter.copyToDomainObject(formaPagamentoInput, formaPagamento);
+
+        formaPagamento = formaPagamentoService.salvar(formaPagamento);
+
+        return formaPagamentoConverter.toModel(formaPagamento);
+    }
+
+    @Override
     @DeleteMapping("/{id}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void remover(@PathVariable Long id) {
-		formaPagamentoService.remover(id);
-	}
-	
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void remover(@PathVariable Long id) {
+        formaPagamentoService.remover(id);
+    }
+
 }

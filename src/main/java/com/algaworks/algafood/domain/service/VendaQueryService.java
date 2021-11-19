@@ -1,12 +1,12 @@
 package com.algaworks.algafood.domain.service;
 
+import com.algaworks.algafood.api.dto.model.VendaDiariaModel;
+import com.algaworks.algafood.domain.filter.VendaDiariaFilter;
+
 import java.util.List;
 
-import com.algaworks.algafood.domain.filter.VendaDiariaFilter;
-import com.algaworks.algafood.api.dto.response.VendaDiariaDto;
-
 public interface VendaQueryService {
-	
-	List<VendaDiariaDto> consultarVendasDiarias(VendaDiariaFilter vendaDiariaFilter, String timeOffset);
+
+    List<VendaDiariaModel> consultarVendasDiarias(VendaDiariaFilter vendaDiariaFilter, String timeOffset);
 
 }

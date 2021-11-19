@@ -1,41 +1,37 @@
 package com.algaworks.algafood.api.openapi.controller;
 
-import com.algaworks.algafood.api.dto.request.EstadoRequest;
-import com.algaworks.algafood.api.dto.response.EstadoResponse;
+import com.algaworks.algafood.api.dto.input.EstadoInput;
+import com.algaworks.algafood.api.dto.model.EstadoModel;
 import com.algaworks.algafood.api.exceptionhandler.detail.Problem;
 import io.swagger.annotations.*;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import java.util.List;
+import org.springframework.hateoas.CollectionModel;
 
 @Api(tags = "Estados")
 public interface EstadoControllerOpenApi {
 
     @ApiOperation("Lista os estados")
-    List<EstadoResponse> listar();
+    CollectionModel<EstadoModel> listar();
 
     @ApiOperation("Busca um estado por ID")
     @ApiResponses({
             @ApiResponse(code = 400, message = "ID do estado inválido", response = Problem.class),
             @ApiResponse(code = 404, message = "Estado não encontrado", response = Problem.class)
     })
-    EstadoResponse buscar(@ApiParam(value = "ID de um estado", example = "1", required = true) Long id);
+    EstadoModel buscar(@ApiParam(value = "ID de um estado", example = "1", required = true) Long id);
 
     @ApiOperation("Cadastra um estado")
     @ApiResponses({
             @ApiResponse(code = 201, message = "Estado cadastrado"),
     })
-    EstadoResponse adicionar(@ApiParam(name = "corpo", value = "Representação de um novo estado", required = true) EstadoRequest estadoRequest);
+    EstadoModel adicionar(@ApiParam(name = "corpo", value = "Representação de um novo estado", required = true) EstadoInput estadoInput);
 
     @ApiOperation("Atualiza um estado por ID")
     @ApiResponses({
             @ApiResponse(code = 200, message = "Estado atualizado"),
             @ApiResponse(code = 404, message = "Estado não encontrado", response = Problem.class)
     })
-    EstadoResponse atualizar(@ApiParam(value = "ID de um estado", example = "1", required = true) Long id,
-                             @ApiParam(name = "corpo", value = "Representação de um estado com os novos dados", required = true) EstadoRequest estadoRequest);
+    EstadoModel atualizar(@ApiParam(value = "ID de um estado", example = "1", required = true) Long id,
+                          @ApiParam(name = "corpo", value = "Representação de um estado com os novos dados", required = true) EstadoInput estadoInput);
 
     @ApiOperation("Exclui um estado por ID")
     @ApiResponses({

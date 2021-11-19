@@ -3,9 +3,9 @@ package com.algaworks.algafood.domain.repository;
 import com.algaworks.algafood.domain.model.FotoProduto;
 
 public interface ProdutoRepositoryQueries {
-	
-	FotoProduto save(FotoProduto fotoProduto);
-	
-	void deleteFotoProduto(FotoProduto fotoProduto);
-	
+
+    FotoProduto save(FotoProduto fotoProduto);
+
+    void deleteFotoProduto(FotoProduto fotoProduto);
+
 }

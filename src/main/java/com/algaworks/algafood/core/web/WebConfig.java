@@ -10,17 +10,17 @@ import javax.servlet.Filter;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-	
-	@Override
-	public void addCorsMappings(CorsRegistry corsRegistry) {
-		corsRegistry.addMapping("/**")
-			.allowedOrigins("http://localhost:8000")
-			.allowedMethods("*");
-	}
 
-	@Bean
-	public Filter shallowEtagHeaderFilter() {
-		return new ShallowEtagHeaderFilter();
-	}
-	
+    @Override
+    public void addCorsMappings(CorsRegistry corsRegistry) {
+        corsRegistry.addMapping("/**")
+                .allowedOrigins("http://localhost:8000")
+                .allowedMethods("*");
+    }
+
+    @Bean
+    public Filter shallowEtagHeaderFilter() {
+        return new ShallowEtagHeaderFilter();
+    }
+
 }

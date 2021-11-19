@@ -1,91 +1,80 @@
 package com.algaworks.algafood.api.controller;
 
-import java.util.List;
+import com.algaworks.algafood.api.converter.CozinhaConverter;
+import com.algaworks.algafood.api.dto.input.CozinhaInput;
+import com.algaworks.algafood.api.dto.model.CozinhaModel;
+import com.algaworks.algafood.api.openapi.controller.CozinhaControllerOpenApi;
+import com.algaworks.algafood.domain.model.Cozinha;
+import com.algaworks.algafood.domain.service.CozinhaService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.PagedModel;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-import com.algaworks.algafood.api.openapi.controller.CozinhaControllerOpenApi;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.algaworks.algafood.api.dto.converter.CozinhaConverter;
-import com.algaworks.algafood.api.dto.request.CozinhaRequest;
-import com.algaworks.algafood.api.dto.response.CozinhaResponse;
-import com.algaworks.algafood.domain.model.Cozinha;
-import com.algaworks.algafood.domain.service.CozinhaService;
-
 @RestController
-@RequestMapping(path ="/cozinhas", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/cozinhas", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CozinhaController implements CozinhaControllerOpenApi {
 
-	@Autowired
-	private CozinhaService cozinhaService;
-	
-	@Autowired
-	private CozinhaConverter cozinhaConverter;
+    @Autowired
+    private CozinhaService cozinhaService;
 
-	@Override
-	@GetMapping
-	public Page<CozinhaResponse> listar(@PageableDefault(page = 10) Pageable pageable) {
-		Page<Cozinha> cozinhaPage = cozinhaService.listarPaginado(pageable);
-		
-		List<CozinhaResponse> cozinhas = cozinhaConverter.toCollectionResponseDto(cozinhaPage.getContent());
-		
-		Page<CozinhaResponse> cozinhaResponsePage = new PageImpl<>(cozinhas, pageable, cozinhaPage.getTotalElements());
-		
-		return cozinhaResponsePage;
-	}
+    @Autowired
+    private CozinhaConverter cozinhaConverter;
 
-	@Override
-	@GetMapping("/{id}")
-	public CozinhaResponse buscar(@PathVariable Long id) {
-		Cozinha cozinha = cozinhaService.buscar(id);
-		
-		return cozinhaConverter.toResponseDto(cozinha);
-	}
+    @Autowired
+    private PagedResourcesAssembler<Cozinha> pagedResourcesAssembler;
 
-	@Override
-	@PostMapping
-	@ResponseStatus(HttpStatus.CREATED)
-	public CozinhaResponse adicionar(@Valid @RequestBody CozinhaRequest cozinhaRequest) {
-		Cozinha cozinha = cozinhaConverter.toEntity(cozinhaRequest);
-		
-		cozinha = cozinhaService.salvar(cozinha);
-		
-		return cozinhaConverter.toResponseDto(cozinha);
-	}
+    @Override
+    @GetMapping
+    public PagedModel<CozinhaModel> listar(@PageableDefault(page = 10) Pageable pageable) {
+        Page<Cozinha> cozinhaPage = cozinhaService.listarPaginado(pageable);
 
-	@Override
-	@PutMapping("/{id}")
-	public CozinhaResponse atualizar(@PathVariable Long id, @Valid @RequestBody CozinhaRequest cozinhaRequest) {
-		Cozinha cozinhaBanco = cozinhaService.buscar(id);
-		
-		cozinhaConverter.copyToEntity(cozinhaRequest, cozinhaBanco);
-		
-		cozinhaBanco = cozinhaService.salvar(cozinhaBanco);
-		
-		return cozinhaConverter.toResponseDto(cozinhaBanco);
-	}
+        return pagedResourcesAssembler.toModel(cozinhaPage, cozinhaConverter);
+    }
 
-	@Override
-	@DeleteMapping("/{id}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void remover(@PathVariable Long id) {
-		cozinhaService.remover(id);
-	}
+    @Override
+    @GetMapping("/{id}")
+    public CozinhaModel buscar(@PathVariable Long id) {
+        Cozinha cozinha = cozinhaService.buscar(id);
+
+        return cozinhaConverter.toModel(cozinha);
+    }
+
+    @Override
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public CozinhaModel adicionar(@Valid @RequestBody CozinhaInput cozinhaInput) {
+        Cozinha cozinha = cozinhaConverter.toDomainObject(cozinhaInput);
+
+        cozinha = cozinhaService.salvar(cozinha);
+
+        return cozinhaConverter.toModel(cozinha);
+    }
+
+    @Override
+    @PutMapping("/{id}")
+    public CozinhaModel atualizar(@PathVariable Long id, @Valid @RequestBody CozinhaInput cozinhaInput) {
+        Cozinha cozinhaBanco = cozinhaService.buscar(id);
+
+        cozinhaConverter.copyToDomainObject(cozinhaInput, cozinhaBanco);
+
+        cozinhaBanco = cozinhaService.salvar(cozinhaBanco);
+
+        return cozinhaConverter.toModel(cozinhaBanco);
+    }
+
+    @Override
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void remover(@PathVariable Long id) {
+        cozinhaService.remover(id);
+    }
 
 }

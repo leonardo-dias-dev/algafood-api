@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class TomcatCustomizer implements WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
 
-	@Override
-	public void customize(TomcatServletWebServerFactory tomcatServletWebServerFactory) {
-		tomcatServletWebServerFactory.addConnectorCustomizers(tomcatConnectorCustomizer -> tomcatConnectorCustomizer.setAttribute("relaxedQueryChars", "[]"));
-	}
+    @Override
+    public void customize(TomcatServletWebServerFactory tomcatServletWebServerFactory) {
+        tomcatServletWebServerFactory.addConnectorCustomizers(tomcatConnectorCustomizer -> tomcatConnectorCustomizer.setAttribute("relaxedQueryChars", "[]"));
+    }
 
 }

@@ -1,16 +1,15 @@
 package com.algaworks.algafood.domain.exception;
 
-import org.springframework.validation.BindingResult;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.validation.BindingResult;
 
 @Getter
 @AllArgsConstructor
 public class ValidacaoException extends RuntimeException {
-	
-	private static final long serialVersionUID = 1L;
-	
-	private BindingResult bindingResult;
-	
+
+    private static final long serialVersionUID = 1L;
+
+    private BindingResult bindingResult;
+
 }
