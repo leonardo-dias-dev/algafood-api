@@ -1,8 +1,12 @@
 package com.algaworks.algafood.core.springfox;
 
-import com.algaworks.algafood.api.dto.model.*;
 import com.algaworks.algafood.api.exceptionhandler.detail.Problem;
-import com.algaworks.algafood.api.openapi.model.*;
+import com.algaworks.algafood.api.v1.dto.model.*;
+import com.algaworks.algafood.api.v1.openapi.model.*;
+import com.algaworks.algafood.api.v2.dto.model.CidadeModelV2;
+import com.algaworks.algafood.api.v2.dto.model.CozinhaModelV2;
+import com.algaworks.algafood.api.v2.openapi.controller.CidadeControllerV2OpenApi;
+import com.algaworks.algafood.api.v2.openapi.model.CozinhasModelV2OpenApi;
 import com.fasterxml.classmate.TypeResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -50,11 +54,12 @@ public class SpringFoxConfig implements WebMvcConfigurer {
     private TypeResolver typeResolver;
 
     @Bean
-    public Docket docket() {
+    public Docket docketV1() {
         return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("V1")
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.algaworks.algafood.api"))
-                .paths(PathSelectors.any())
+                .paths(PathSelectors.ant("/v1/**"))
                 .build()
                 .useDefaultResponseMessages(false)
                 .globalResponseMessage(RequestMethod.GET, globalResponseMessage())
@@ -89,7 +94,7 @@ public class SpringFoxConfig implements WebMvcConfigurer {
                         typeResolver.resolve(CollectionModel.class, UsuarioModel.class),
                         UsuariosModelOpenApi.class))
                 .ignoredParameterTypes(ServletWebRequest.class, URL.class, URI.class, URLStreamHandler.class, Resource.class, File.class, InputStream.class)
-                .apiInfo(apiInfo())
+                .apiInfo(apiInfoV1())
                 .tags(
                         new Tag("Cidades", "Gerencia as cidades"),
                         new Tag("Grupos", "Gerencia os grupos"),
@@ -101,6 +106,32 @@ public class SpringFoxConfig implements WebMvcConfigurer {
                         new Tag("Usuários", "Gerencia os usuários"),
                         new Tag("Estatísticas", "Estatísticas da AlgaFood"),
                         new Tag("Permissões", "Gerencia as permissões")
+                );
+    }
+
+    @Bean
+    public Docket docketV2() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("V2")
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.algaworks.algafood.api"))
+                .paths(PathSelectors.ant("/v2/**"))
+                .build()
+                .useDefaultResponseMessages(false)
+                .globalResponseMessage(RequestMethod.GET, globalResponseMessage())
+                .globalResponseMessage(RequestMethod.POST, globalPostPutResponseMessages())
+                .globalResponseMessage(RequestMethod.PUT, globalPostPutResponseMessages())
+                .globalResponseMessage(RequestMethod.DELETE, globalDeleteResponseMessages())
+                .additionalModels(typeResolver.resolve(Problem.class))
+                .directModelSubstitute(Pageable.class, PageableModelOpenApi.class)
+                .directModelSubstitute(Links.class, LinksModelOpenApi.class)
+                .ignoredParameterTypes(ServletWebRequest.class, URL.class, URI.class, URLStreamHandler.class, Resource.class, File.class, InputStream.class)
+                .alternateTypeRules(AlternateTypeRules.newRule(typeResolver.resolve(PagedModel.class, CozinhaModelV2.class), CozinhasModelV2OpenApi.class))
+                .alternateTypeRules(AlternateTypeRules.newRule(typeResolver.resolve(CollectionModel.class, CidadeModelV2.class), CidadeControllerV2OpenApi.class))
+                .apiInfo(apiInfoV2())
+                .tags(
+                        new Tag("Cidades", "Gerencia as cidades"),
+                        new Tag("Cozinhas", "Gerencia as cozinhas")
                 );
     }
 
@@ -154,11 +185,20 @@ public class SpringFoxConfig implements WebMvcConfigurer {
         );
     }
 
-    private ApiInfo apiInfo() {
+    private ApiInfo apiInfoV1() {
         return new ApiInfoBuilder()
                 .title("AlgaFood API")
                 .description("API aberta para clientes e restaurantes")
                 .version("1")
+                .contact(new Contact("AlgaWorks", "https://www.algaworks.com", "contato@algaworks.com"))
+                .build();
+    }
+
+    private ApiInfo apiInfoV2() {
+        return new ApiInfoBuilder()
+                .title("AlgaFood API")
+                .description("API aberta para clientes e restaurantes")
+                .version("2")
                 .contact(new Contact("AlgaWorks", "https://www.algaworks.com", "contato@algaworks.com"))
                 .build();
     }
