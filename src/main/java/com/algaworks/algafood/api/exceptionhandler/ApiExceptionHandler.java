@@ -8,6 +8,7 @@ import com.algaworks.algafood.domain.exception.NegocioException;
 import com.algaworks.algafood.domain.exception.ValidacaoException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.exc.PropertyBindingException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
@@ -23,6 +24,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+@Slf4j
 @ControllerAdvice
 public class ApiExceptionHandler extends AbstractExceptionHandler {
 
@@ -67,7 +69,7 @@ public class ApiExceptionHandler extends AbstractExceptionHandler {
         HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         String detail = MSG_ERRO_GENERICA_USUARIO_FINAL;
 
-        ex.printStackTrace();
+        log.error(ex.getMessage(), ex);
 
         Problem problem = createProblemBuilder(httpStatus, ProblemType.ERRO_DE_SISTEMA, detail)
                 .userMessage(detail)
