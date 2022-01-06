@@ -36,12 +36,6 @@ public class CozinhaController implements CozinhaControllerOpenApi {
     @Override
     @GetMapping
     public PagedModel<CozinhaModel> listar(@PageableDefault(page = 10) Pageable pageable) {
-        log.info("Listando {} cozinhas...", pageable.getPageSize());
-
-        if (true) {
-            throw new RuntimeException("Teste de exception");
-        }
-
         Page<Cozinha> cozinhaPage = cozinhaService.listarPaginado(pageable);
 
         return pagedResourcesAssembler.toModel(cozinhaPage, cozinhaConverter);
