@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = "/v2",produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/v2", produces = MediaType.APPLICATION_JSON_VALUE)
 public class RootEntryPointControllerV2 {
 
     @Autowired

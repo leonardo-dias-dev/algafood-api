@@ -7,6 +7,7 @@ import com.algaworks.algafood.api.v2.dto.model.CidadeModelV2;
 import com.algaworks.algafood.api.v2.dto.model.CozinhaModelV2;
 import com.algaworks.algafood.api.v2.openapi.controller.CidadeControllerV2OpenApi;
 import com.algaworks.algafood.api.v2.openapi.model.CozinhasModelV2OpenApi;
+import com.amazonaws.services.kms.model.GenerateRandomRequest;
 import com.fasterxml.classmate.TypeResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -23,17 +24,12 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration;
-import springfox.documentation.builders.ApiInfoBuilder;
-import springfox.documentation.builders.PathSelectors;
-import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.builders.ResponseMessageBuilder;
+import springfox.documentation.builders.*;
 import springfox.documentation.schema.AlternateTypeRules;
 import springfox.documentation.schema.ModelRef;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.Contact;
-import springfox.documentation.service.ResponseMessage;
-import springfox.documentation.service.Tag;
+import springfox.documentation.service.*;
 import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
@@ -106,7 +102,9 @@ public class SpringFoxConfig implements WebMvcConfigurer {
                         new Tag("Usuários", "Gerencia os usuários"),
                         new Tag("Estatísticas", "Estatísticas da AlgaFood"),
                         new Tag("Permissões", "Gerencia as permissões")
-                );
+                )
+                .securitySchemes(List.of(securityScheme()))
+                .securityContexts(List.of(securityContext()));
     }
 
     @Bean
@@ -210,6 +208,39 @@ public class SpringFoxConfig implements WebMvcConfigurer {
 
         registry.addResourceHandler("/webjars/**")
                 .addResourceLocations("classpath:/META-INF/resources/webjars/");
+    }
+
+    private SecurityScheme securityScheme() {
+        return new OAuthBuilder()
+                .name("AlgaFood")
+                .grantTypes(grantTypes())
+                .scopes(scopes())
+                .build();
+    }
+
+    private List<GrantType> grantTypes() {
+        return List.of(
+                new ResourceOwnerPasswordCredentialsGrant("/oauth/token")
+        );
+    }
+
+    public List<AuthorizationScope> scopes() {
+        return List.of(
+                new AuthorizationScope("READ", "Acesso de leitura"),
+                new AuthorizationScope("WRITE", "Acesso de escrita")
+        );
+    }
+
+    private SecurityContext securityContext() {
+        SecurityReference securityReference = SecurityReference.builder()
+                .reference("AlgaFood")
+                .scopes(scopes().toArray(new AuthorizationScope[0]))
+                .build();
+
+        return SecurityContext.builder()
+                .securityReferences(List.of(securityReference))
+                .forPaths(PathSelectors.any())
+                .build();
     }
 
 }

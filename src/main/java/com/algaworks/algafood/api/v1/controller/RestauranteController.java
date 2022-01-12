@@ -8,6 +8,7 @@ import com.algaworks.algafood.api.v1.dto.model.RestauranteApenasNomeModel;
 import com.algaworks.algafood.api.v1.dto.model.RestauranteModel;
 import com.algaworks.algafood.api.v1.dto.model.RestauranteResumoModel;
 import com.algaworks.algafood.api.v1.openapi.controller.RestauranteControllerOpenApi;
+import com.algaworks.algafood.core.security.resourceserver.CheckSecurity;
 import com.algaworks.algafood.domain.exception.CidadeNaoEncontradaException;
 import com.algaworks.algafood.domain.exception.CozinhaNaoEncontradaException;
 import com.algaworks.algafood.domain.exception.NegocioException;
@@ -42,6 +43,7 @@ public class RestauranteController implements RestauranteControllerOpenApi {
 
     @Override
     @GetMapping
+    @CheckSecurity.Restaurantes.Consultar
     public CollectionModel<RestauranteResumoModel> listar() {
         List<Restaurante> restaurantes = restauranteService.listar();
 
@@ -49,6 +51,7 @@ public class RestauranteController implements RestauranteControllerOpenApi {
     }
 
     @Override
+    @CheckSecurity.Restaurantes.Consultar
     @GetMapping(params = "projecao=apenas-nome")
     public CollectionModel<RestauranteApenasNomeModel> listarApenasNome() {
         List<Restaurante> restaurantes = restauranteService.listar();
@@ -58,6 +61,7 @@ public class RestauranteController implements RestauranteControllerOpenApi {
 
     @Override
     @GetMapping("/{id}")
+    @CheckSecurity.Restaurantes.Consultar
     public RestauranteModel buscar(@PathVariable Long id) {
         Restaurante restaurante = restauranteService.buscar(id);
 
@@ -66,6 +70,7 @@ public class RestauranteController implements RestauranteControllerOpenApi {
 
     @Override
     @PostMapping
+    @CheckSecurity.Restaurantes.Editar
     @ResponseStatus(HttpStatus.CREATED)
     public RestauranteModel adicionar(@Valid @RequestBody RestauranteInput restauranteInput) {
         try {
@@ -81,6 +86,7 @@ public class RestauranteController implements RestauranteControllerOpenApi {
 
     @Override
     @PutMapping("/{id}")
+    @CheckSecurity.Restaurantes.Editar
     public RestauranteModel atualizar(@PathVariable Long id, @Valid @RequestBody RestauranteInput restauranteInput) {
         try {
             Restaurante restauranteBanco = restauranteService.buscar(id);
@@ -97,6 +103,7 @@ public class RestauranteController implements RestauranteControllerOpenApi {
 
     @Override
     @PutMapping("/{id}/ativo")
+    @CheckSecurity.Restaurantes.Editar
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> ativar(@PathVariable Long id) {
         restauranteService.ativar(id);
@@ -106,6 +113,7 @@ public class RestauranteController implements RestauranteControllerOpenApi {
 
     @Override
     @DeleteMapping("/{id}/ativo")
+    @CheckSecurity.Restaurantes.Editar
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> inativar(@PathVariable Long id) {
         restauranteService.inativar(id);
@@ -115,6 +123,7 @@ public class RestauranteController implements RestauranteControllerOpenApi {
 
     @Override
     @PutMapping("/ativacoes")
+    @CheckSecurity.Restaurantes.Editar
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void ativarMultiplos(@RequestBody List<Long> restaurantesIds) {
         try {
@@ -126,6 +135,7 @@ public class RestauranteController implements RestauranteControllerOpenApi {
 
     @Override
     @DeleteMapping("/inativacoes")
+    @CheckSecurity.Restaurantes.Editar
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void inativarMultiplos(@RequestBody List<Long> restaurantesIds) {
         try {
@@ -137,6 +147,7 @@ public class RestauranteController implements RestauranteControllerOpenApi {
 
     @Override
     @PutMapping("/{id}/abertura")
+    @CheckSecurity.Restaurantes.Funcionamento
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> abrir(@PathVariable Long id) {
         restauranteService.abrir(id);
@@ -146,6 +157,7 @@ public class RestauranteController implements RestauranteControllerOpenApi {
 
     @Override
     @PutMapping("/{id}/fechamento")
+    @CheckSecurity.Restaurantes.Funcionamento
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> fechar(@PathVariable Long id) {
         restauranteService.fechar(id);

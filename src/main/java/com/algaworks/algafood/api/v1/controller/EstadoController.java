@@ -4,6 +4,7 @@ import com.algaworks.algafood.api.v1.converter.EstadoConverter;
 import com.algaworks.algafood.api.v1.dto.input.EstadoInput;
 import com.algaworks.algafood.api.v1.dto.model.EstadoModel;
 import com.algaworks.algafood.api.v1.openapi.controller.EstadoControllerOpenApi;
+import com.algaworks.algafood.core.security.resourceserver.CheckSecurity;
 import com.algaworks.algafood.domain.model.Estado;
 import com.algaworks.algafood.domain.service.EstadoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ public class EstadoController implements EstadoControllerOpenApi {
 
     @Override
     @GetMapping
+    @CheckSecurity.Estados.Consultar
     public CollectionModel<EstadoModel> listar() {
         List<Estado> estados = estadoService.listar();
 
@@ -34,7 +36,8 @@ public class EstadoController implements EstadoControllerOpenApi {
     }
 
     @Override
-    @GetMapping("/{id}")
+    @GetMapping(path = "/{id}")
+    @CheckSecurity.Estados.Consultar
     public EstadoModel buscar(@PathVariable Long id) {
         Estado estado = estadoService.buscar(id);
 
@@ -43,6 +46,7 @@ public class EstadoController implements EstadoControllerOpenApi {
 
     @Override
     @PostMapping
+    @CheckSecurity.Estados.Editar
     @ResponseStatus(HttpStatus.CREATED)
     public EstadoModel adicionar(@Valid @RequestBody EstadoInput estadoInput) {
         Estado estado = estadoConverter.toDomainObject(estadoInput);
@@ -53,7 +57,8 @@ public class EstadoController implements EstadoControllerOpenApi {
     }
 
     @Override
-    @PutMapping("/{id}")
+    @CheckSecurity.Estados.Editar
+    @PutMapping(path = "/{id}")
     public EstadoModel atualizar(@PathVariable Long id, @Valid @RequestBody EstadoInput estadoInput) {
         Estado estadoBanco = estadoService.buscar(id);
 
@@ -65,7 +70,8 @@ public class EstadoController implements EstadoControllerOpenApi {
     }
 
     @Override
-    @DeleteMapping("/{id}")
+    @CheckSecurity.Estados.Editar
+    @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void remover(@PathVariable Long id) {
         estadoService.remover(id);

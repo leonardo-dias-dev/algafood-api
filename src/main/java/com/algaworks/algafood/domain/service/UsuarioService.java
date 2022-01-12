@@ -6,6 +6,7 @@ import com.algaworks.algafood.domain.model.Grupo;
 import com.algaworks.algafood.domain.model.Usuario;
 import com.algaworks.algafood.domain.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +21,9 @@ public class UsuarioService {
 
     @Autowired
     private GrupoService grupoService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public List<Usuario> listar() {
         return usuarioRepository.findAll();
@@ -40,6 +44,10 @@ public class UsuarioService {
             throw new NegocioException(String.format("Já existe um usuário cadastrado com o e-mail %s", usuario.getEmail()));
         }
 
+        if (usuario.isNovo()) {
+            usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
+        }
+
         return usuarioRepository.save(usuario);
     }
 
@@ -47,11 +55,11 @@ public class UsuarioService {
     public void alterarSenha(Long id, String senhaAtual, String novaSenha) {
         Usuario usuario = buscar(id);
 
-        if (usuario.senhaNaoCoincideCom(senhaAtual)) {
+        if (!passwordEncoder.matches(senhaAtual, usuario.getSenha())) {
             throw new NegocioException("Senha atual informada não coincide com a senha do usuário.");
         }
 
-        usuario.setSenha(novaSenha);
+        usuario.setSenha(passwordEncoder.encode(novaSenha));
     }
 
     @Transactional

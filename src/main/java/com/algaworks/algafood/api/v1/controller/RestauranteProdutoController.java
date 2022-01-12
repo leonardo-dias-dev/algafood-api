@@ -5,6 +5,7 @@ import com.algaworks.algafood.api.v1.converter.ProdutoConverter;
 import com.algaworks.algafood.api.v1.dto.input.ProdutoInput;
 import com.algaworks.algafood.api.v1.dto.model.ProdutoModel;
 import com.algaworks.algafood.api.v1.openapi.controller.RestauranteProdutoControllerOpenApi;
+import com.algaworks.algafood.core.security.resourceserver.CheckSecurity;
 import com.algaworks.algafood.domain.model.Produto;
 import com.algaworks.algafood.domain.model.Restaurante;
 import com.algaworks.algafood.domain.service.ProdutoService;
@@ -36,6 +37,7 @@ public class RestauranteProdutoController implements RestauranteProdutoControlle
 
     @Override
     @GetMapping
+    @CheckSecurity.Restaurantes.Consultar
     public CollectionModel<ProdutoModel> listar(@PathVariable Long restauranteId,
                                                 @RequestParam(required = false, defaultValue = "false") Boolean incluirInativos) {
         Restaurante restaurante = restauranteService.buscar(restauranteId);
@@ -48,6 +50,7 @@ public class RestauranteProdutoController implements RestauranteProdutoControlle
 
     @Override
     @GetMapping("/{produtoId}")
+    @CheckSecurity.Restaurantes.Consultar
     public ProdutoModel buscar(@PathVariable Long restauranteId, @PathVariable Long produtoId) {
         Produto produto = produtoService.buscar(produtoId, restauranteId);
 
@@ -56,6 +59,7 @@ public class RestauranteProdutoController implements RestauranteProdutoControlle
 
     @Override
     @PostMapping
+    @CheckSecurity.Restaurantes.Editar
     @ResponseStatus(HttpStatus.CREATED)
     public ProdutoModel adicionar(@PathVariable Long restauranteId, @Valid @RequestBody ProdutoInput produtoInput) {
         Restaurante restaurante = restauranteService.buscar(restauranteId);
@@ -70,6 +74,7 @@ public class RestauranteProdutoController implements RestauranteProdutoControlle
     }
 
     @Override
+    @CheckSecurity.Restaurantes.Editar
     @PutMapping("/{produtoId}")
     public ProdutoModel atualizar(@PathVariable Long restauranteId, @PathVariable Long produtoId, @Valid @RequestBody ProdutoInput produtoInput) {
         Produto produto = produtoService.buscar(produtoId, restauranteId);

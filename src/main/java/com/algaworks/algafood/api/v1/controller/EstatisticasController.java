@@ -4,6 +4,7 @@ import com.algaworks.algafood.api.v1.AlgaLinks;
 import com.algaworks.algafood.api.v1.dto.model.EstatisticasModel;
 import com.algaworks.algafood.api.v1.dto.model.VendaDiariaModel;
 import com.algaworks.algafood.api.v1.openapi.controller.EstatisticasControllerOpenApi;
+import com.algaworks.algafood.core.security.resourceserver.CheckSecurity;
 import com.algaworks.algafood.domain.filter.VendaDiariaFilter;
 import com.algaworks.algafood.domain.service.VendaQueryService;
 import com.algaworks.algafood.domain.service.VendaReportService;
@@ -32,6 +33,7 @@ public class EstatisticasController implements EstatisticasControllerOpenApi {
     private AlgaLinks algaLinks;
 
     @Override
+    @CheckSecurity.Estatisticas.Consultar
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public EstatisticasModel estatisticas() {
         var estatisticasModel = new EstatisticasModel();
@@ -42,12 +44,14 @@ public class EstatisticasController implements EstatisticasControllerOpenApi {
     }
 
     @Override
+    @CheckSecurity.Estatisticas.Consultar
     @GetMapping(path = "/vendas-diarias", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<VendaDiariaModel> consultarVendasDiarias(VendaDiariaFilter vendaDiariaFilter, @RequestParam(required = false, defaultValue = "+00:00") String timeOffset) {
         return vendaQueryService.consultarVendasDiarias(vendaDiariaFilter, timeOffset);
     }
 
     @Override
+    @CheckSecurity.Estatisticas.Consultar
     @GetMapping(path = "/vendas-diarias", produces = MediaType.APPLICATION_PDF_VALUE)
     public ResponseEntity<byte[]> consultarVendasDiariasPdf(VendaDiariaFilter vendaDiariaFilter, @RequestParam(required = false, defaultValue = "+00:00") String timeOffset) {
         byte[] vendasDiarias = vendaReportService.emitirVendasDiarias(vendaDiariaFilter, timeOffset);

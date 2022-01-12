@@ -18,7 +18,7 @@ public class ModelMapperConfig {
         ModelMapper modelMapper = new ModelMapper();
 
         modelMapper.createTypeMap(CidadeInputV2.class, Cidade.class)
-                        .addMappings(mapper -> mapper.skip(Cidade::setId));
+                .addMappings(mapper -> mapper.skip(Cidade::setId));
 
         modelMapper.createTypeMap(ItemPedidoInput.class, ItemPedido.class)
                 .addMappings(mapper -> mapper.skip(ItemPedido::setId));

@@ -6,23 +6,14 @@ import com.algaworks.algafood.domain.exception.EntidadeEmUsoException;
 import com.algaworks.algafood.domain.exception.EntidadeNaoEncontradaException;
 import com.algaworks.algafood.domain.exception.NegocioException;
 import com.algaworks.algafood.domain.exception.ValidacaoException;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.fasterxml.jackson.databind.exc.PropertyBindingException;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.validation.BindException;
-import org.springframework.web.HttpMediaTypeNotAcceptableException;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import org.springframework.web.servlet.NoHandlerFoundException;
 
 @Slf4j
 @ControllerAdvice
@@ -83,61 +74,19 @@ public class ApiExceptionHandler extends AbstractExceptionHandler {
         return handleValidationInternal(ex, ex.getBindingResult(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
-    @Override
-    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
-                                                                  HttpHeaders headers, HttpStatus status, WebRequest request) {
-        Throwable rootCause = ExceptionUtils.getRootCause(ex);
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<?> handleEntidadeNaoEncontrada(AccessDeniedException ex, WebRequest request) {
 
-        if (rootCause instanceof InvalidFormatException) {
-            return handleInvalidFormatException((InvalidFormatException) rootCause, headers, status, request);
-        } else if (rootCause instanceof PropertyBindingException) {
-            return handlePropertyBindingException((PropertyBindingException) rootCause, headers, status, request);
-        }
+        HttpStatus status = HttpStatus.FORBIDDEN;
+        ProblemType problemType = ProblemType.ACESSO_NEGADO;
+        String detail = ex.getMessage();
 
-        ProblemType problemType = ProblemType.MENSAGEM_INCOMPREENSIVEL;
-        String detail = "O corpo da requisição está inválido. Verifique erro de sintaxe.";
-
-        Problem problem = createProblemBuilder(status, problemType, detail).userMessage(MSG_ERRO_GENERICA_USUARIO_FINAL)
+        Problem problem = createProblemBuilder(status, problemType, detail)
+                .userMessage(detail)
+                .userMessage("Você não possui permissão para executar essa operação.")
                 .build();
 
         return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
-    }
-
-    @Override
-    protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException ex, HttpHeaders headers,
-                                                        HttpStatus status, WebRequest request) {
-        if (ex instanceof MethodArgumentTypeMismatchException) {
-            return handleMethodArgumentTypeMismatchException((MethodArgumentTypeMismatchException) ex, headers, status, request);
-        }
-
-        return super.handleTypeMismatch(ex, headers, status, request);
-    }
-
-    @Override
-    protected ResponseEntity<Object> handleNoHandlerFoundException(NoHandlerFoundException ex, HttpHeaders headers,
-                                                                   HttpStatus status, WebRequest request) {
-        ProblemType problemType = ProblemType.RECURSO_NAO_ENCONTRADO;
-        String detail = String.format("O recurso %s não existe.", ex.getRequestURL());
-
-        Problem problem = createProblemBuilder(status, problemType, detail).userMessage(MSG_ERRO_GENERICA_USUARIO_FINAL)
-                .build();
-
-        return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
-    }
-
-    @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        return handleValidationInternal(ex, ex.getBindingResult(), headers, status, request);
-    }
-
-    @Override
-    protected ResponseEntity<Object> handleBindException(BindException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        return handleValidationInternal(ex, ex.getBindingResult(), headers, status, request);
-    }
-
-    @Override
-    protected ResponseEntity<Object> handleHttpMediaTypeNotAcceptable(HttpMediaTypeNotAcceptableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        return ResponseEntity.status(status).headers(headers).build();
     }
 
 }

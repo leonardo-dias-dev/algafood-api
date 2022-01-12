@@ -20,7 +20,7 @@ public class NotificacaoClientePedidoConfirmadoListener {
 
         Mensagem mensagem = Mensagem.builder()
                 .assunto(String.format("%s - Pedido confirmado", pedido.getRestaurante().getNome()))
-                .corpo("pedido-confirmado.html")
+                .corpo("emails/pedido-confirmado.html")
                 .destinatario(pedido.getCliente().getEmail())
                 .variavel("pedido", pedido)
                 .build();

@@ -4,6 +4,7 @@ import com.algaworks.algafood.api.v1.converter.CozinhaConverter;
 import com.algaworks.algafood.api.v1.dto.input.CozinhaInput;
 import com.algaworks.algafood.api.v1.dto.model.CozinhaModel;
 import com.algaworks.algafood.api.v1.openapi.controller.CozinhaControllerOpenApi;
+import com.algaworks.algafood.core.security.resourceserver.CheckSecurity;
 import com.algaworks.algafood.domain.model.Cozinha;
 import com.algaworks.algafood.domain.service.CozinhaService;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +36,7 @@ public class CozinhaController implements CozinhaControllerOpenApi {
 
     @Override
     @GetMapping
+    @CheckSecurity.Cozinhas.Consultar
     public PagedModel<CozinhaModel> listar(@PageableDefault(page = 10) Pageable pageable) {
         Page<Cozinha> cozinhaPage = cozinhaService.listarPaginado(pageable);
 
@@ -42,7 +44,8 @@ public class CozinhaController implements CozinhaControllerOpenApi {
     }
 
     @Override
-    @GetMapping("/{id}")
+    @GetMapping(path = "/{id}")
+    @CheckSecurity.Cozinhas.Consultar
     public CozinhaModel buscar(@PathVariable Long id) {
         Cozinha cozinha = cozinhaService.buscar(id);
 
@@ -51,6 +54,7 @@ public class CozinhaController implements CozinhaControllerOpenApi {
 
     @Override
     @PostMapping
+    @CheckSecurity.Cozinhas.Editar
     @ResponseStatus(HttpStatus.CREATED)
     public CozinhaModel adicionar(@Valid @RequestBody CozinhaInput cozinhaInput) {
         Cozinha cozinha = cozinhaConverter.toDomainObject(cozinhaInput);
@@ -61,7 +65,8 @@ public class CozinhaController implements CozinhaControllerOpenApi {
     }
 
     @Override
-    @PutMapping("/{id}")
+    @CheckSecurity.Cozinhas.Editar
+    @PutMapping(path = "/{id}")
     public CozinhaModel atualizar(@PathVariable Long id, @Valid @RequestBody CozinhaInput cozinhaInput) {
         Cozinha cozinhaBanco = cozinhaService.buscar(id);
 
@@ -73,7 +78,8 @@ public class CozinhaController implements CozinhaControllerOpenApi {
     }
 
     @Override
-    @DeleteMapping("/{id}")
+    @CheckSecurity.Cozinhas.Editar
+    @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void remover(@PathVariable Long id) {
         cozinhaService.remover(id);

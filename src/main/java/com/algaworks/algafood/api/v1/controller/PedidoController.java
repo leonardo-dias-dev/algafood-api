@@ -8,6 +8,8 @@ import com.algaworks.algafood.api.v1.dto.model.PedidoResumoModel;
 import com.algaworks.algafood.api.v1.openapi.controller.PedidoControllerOpenApi;
 import com.algaworks.algafood.core.jpa.PageWrapper;
 import com.algaworks.algafood.core.jpa.PageableTranslator;
+import com.algaworks.algafood.core.security.resourceserver.AlgaSecurity;
+import com.algaworks.algafood.core.security.resourceserver.CheckSecurity;
 import com.algaworks.algafood.domain.exception.EntidadeNaoEncontradaException;
 import com.algaworks.algafood.domain.exception.NegocioException;
 import com.algaworks.algafood.domain.filter.PedidoFilter;
@@ -46,8 +48,12 @@ public class PedidoController implements PedidoControllerOpenApi {
     @Autowired
     private PagedResourcesAssembler<Pedido> pagedResourcesAssembler;
 
+    @Autowired
+    private AlgaSecurity algaSecurity;
+
     @Override
     @GetMapping
+    @CheckSecurity.Pedidos.Pesquisar
     public PagedModel<PedidoResumoModel> pesquisar(PedidoFilter pedidoFilter, @PageableDefault(size = 10) Pageable pageable) {
         Pageable pageableTraduzido = traduzirPageable(pageable);
 
@@ -59,22 +65,23 @@ public class PedidoController implements PedidoControllerOpenApi {
     }
 
     @Override
-    @GetMapping("/{codigo}")
-    public PedidoModel buscar(@PathVariable String codigo) {
-        Pedido pedido = pedidoService.buscar(codigo);
+    @CheckSecurity.Pedidos.Buscar
+    @GetMapping(path = "/{codigoPedido}")
+    public PedidoModel buscar(@PathVariable String codigoPedido) {
+        Pedido pedido = pedidoService.buscar(codigoPedido);
 
         return pedidoConverter.toModel(pedido);
     }
 
     @Override
     @PostMapping
+    @CheckSecurity.Pedidos.Criar
     public PedidoModel adicionar(@Valid @RequestBody PedidoInput pedidoInput) {
         try {
             Pedido pedido = pedidoConverter.toDomainObject(pedidoInput);
 
-            // TODO - Pegar usuário autenticado
             pedido.setCliente(new Usuario());
-            pedido.getCliente().setId(1L);
+            pedido.getCliente().setId(algaSecurity.getUsuarioId());
 
             pedido = emissaoPedidoService.emitir(pedido);
 

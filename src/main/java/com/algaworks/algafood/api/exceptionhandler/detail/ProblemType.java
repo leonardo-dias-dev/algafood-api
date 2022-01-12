@@ -11,13 +11,14 @@ public enum ProblemType {
     MENSAGEM_INCOMPREENSIVEL("Mensagem incompreensível", "/mensagem-incompreensivel"),
     PARAMETRO_INVALIDO("Parâmetro inválido", "/parametro-invalido"),
     ERRO_DE_SISTEMA("Erro de sistema", "/erro-de-sistema"),
-    DADOS_INVALIDOS("Dados inválidos", "/dados-invalidos");
+    DADOS_INVALIDOS("Dados inválidos", "/dados-invalidos"),
+    ACESSO_NEGADO("/acesso-negado", "Acesso negado");
 
-    private String title;
+    private final String title;
 
-    private String uri;
+    private final String uri;
 
-    private ProblemType(String title, String uri) {
+    ProblemType(String title, String uri) {
         this.title = title;
         this.uri = uri;
     }
